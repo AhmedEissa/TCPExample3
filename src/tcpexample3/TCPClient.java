@@ -2,7 +2,10 @@ package tcpexample3;
 
 import java.io.*;
 import java.net.*;
-
+/**
+ *
+ * @author Matthew
+ */
 class TCPClient {
     static TextProtocol textProt;
     public static void main(String argv[]) throws IOException, ClassNotFoundException {
