@@ -3,6 +3,7 @@ package tcpexample3;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+
 /**
  *
  * @author Matthew
@@ -12,16 +13,17 @@ class TCPServer {
     public static void main(String argv[]) throws IOException, ClassNotFoundException {
         System.out.println("Server Ready!");
         ServerSocket welcomeSocket = new ServerSocket(6789);
-        
+
         while (true) {
             Socket connectionSocket = welcomeSocket.accept();
             boolean closeConnection = true;
+            ObjectInputStream inStream = new ObjectInputStream(connectionSocket.getInputStream());
+            ObjectOutputStream outStream = new ObjectOutputStream(connectionSocket.getOutputStream());
+
             while (closeConnection) {
-                ObjectInputStream inStream = new ObjectInputStream(connectionSocket.getInputStream());
-                ObjectOutputStream outStream = new ObjectOutputStream(connectionSocket.getOutputStream());
-                            
+
                 TextProtocol clientMessage = (TextProtocol) inStream.readObject();
-                switch(clientMessage.getHeader()){
+                switch (clientMessage.getHeader()) {
                     case "saveMessage":
                         writeToFile(clientMessage.getMessage());
                         outStream.writeObject(new TextProtocol("textSaved"));
@@ -29,12 +31,12 @@ class TCPServer {
                         break;
                     case "readFile":
                         ArrayList<String> fileData = readFromFile();
-                        outStream.writeObject(new TextProtocol("textFile",fileData));
+                        outStream.writeObject(new TextProtocol("textFile", fileData));
                         System.out.println("File read and sent to client.");
                         break;
                     case "closeConnection":
                         connectionSocket.close();
-                        closeConnection=false;
+                        closeConnection = false;
                         break;
                 }
             }
@@ -46,7 +48,7 @@ class TCPServer {
                 new FileWriter("resources/myfile.txt", true));
         writer.write(textFromClient + "\n");
         writer.close();
-        System.out.println("Message "+textFromClient + " Saved!");
+        System.out.println("Message " + textFromClient + " Saved!");
     }
 
     public static ArrayList<String> readFromFile() throws IOException {
